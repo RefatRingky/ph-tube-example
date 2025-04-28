@@ -1,38 +1,46 @@
 console.log("sucessful")
 
-const loadCategories=() =>{
-    fetch("https://openapi.programming-hero.com/api/phero-tube/categories")
+const loadCategories = () => {
+  fetch("https://openapi.programming-hero.com/api/phero-tube/categories")
     //2 - convert promise to json
     .then((res) => res.json())
-     //3 - send data to display
-     .then((data) => displayCategories(data.categories));
+    //3 - send data to display
+    .then((data) => displayCategories(data.categories));
 
 }
-const loadVideos=() =>{
-    fetch(" https://openapi.programming-hero.com/api/phero-tube/videos")
+const loadVideos = () => {
+  fetch(" https://openapi.programming-hero.com/api/phero-tube/videos")
     //2 - convert promise to json
     .then((res) => res.json())
-     //3 - send data to display
-     .then((data) => displayVideos(data.videos));
+    //3 - send data to display
+    .then((data) => displayVideos(data.videos));
 
 }
 
-const displayVideos =(videos) =>{
-    const videoContainer = document.getElementById("videos")
-    videos.forEach((video) =>{
-       console.log(video)
-       const card=document.createElement("div")
-       card.classList ="card "
-       card.innerHTML=
-       `
+const loadCategoryVideos = (id) => {
+  fetch(`https://openapi.programming-hero.com/api/phero-tube/category/${id}`)
+    //2 - convert promise to json
+    .then((res) => res.json())
+    //3 - send data to display
+    .then((data) => displayVideos(data.category));
+}
+
+const displayVideos = (videos) => {
+  const videoContainer = document.getElementById("videos")
+  videoContainer.innerHTML="";
+  videos.forEach((video) => {
+    console.log(video)
+    const card = document.createElement("div")
+    card.classList = "card "
+    card.innerHTML =
+      `
         
       <figure class="h-[200px] relative">
     <img
       src=${video.thumbnail}
       class="h-full w-full object-cover"
       alt="Shoes" />
-      ${
-        video.others.posted_date?.length == 0 ? "" :`
+      ${video.others.posted_date?.length == 0 ? "" : `
         <span class="absolute  right-2  bottom-2 rounded text-white bg-black p-1">${video.others.posted_date}</span>
         `
       }
@@ -57,25 +65,33 @@ const displayVideos =(videos) =>{
       </div>
 
        `
-       videoContainer.append(card);
-    })
+    videoContainer.append(card);
+  })
 }
 
-const displayCategories =(categories)=>{
-    const categoryContainer = document.getElementById("categories")
-    categories.forEach((item) =>{
-         console.log(item)
+const displayCategories = (categories) => {
+  const categoryContainer = document.getElementById("categories")
+  categories.forEach((item) => {
+    console.log(item)
 
-        //  create a button
+    //  create a button
+    const buttonContainer = document.createElement("div");
+    buttonContainer.innerHTML = `
+        <button  onclick="loadCategoryVideos(${item.category_id})"   class="btn">
+         ${item.category}
+        </button>
+        
+        `
 
-        const button = document.createElement("button")
-        button.classList="btn"
-        button.innerText = item.category
+    // const button = document.createElement("button")
+    // button.classList="btn"
+    // button.innerText = item.category
 
-        // add button to the category container
+    // add button to the category container
 
-        categoryContainer.append(button);
-    })
+    categoryContainer.append(buttonContainer);
+
+  })
 }
 
 loadCategories();
